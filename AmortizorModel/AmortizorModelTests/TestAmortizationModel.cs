@@ -16,10 +16,8 @@ namespace AmortizorModelTests
             var rateType = InterestType.Simple;
 
             var model = new AmortizationModel(yearlyInterestRate, initialLoanAmount, daysToCalculate, rateType);
-            var newLoanInfo = model.CalculateInterest();
 
-            Assert.AreEqual(20073.92m, Math.Round(newLoanInfo.NewBalance, 2));
-            Assert.AreEqual(73.92m, Math.Round(newLoanInfo.AccruedInterest, 2));
+            Assert.AreEqual(73.92m, Math.Round(model.AccruedInterest, 2));
         }
     }
 }
