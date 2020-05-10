@@ -6,7 +6,7 @@ namespace AmortizorModel
     {
         public AmortizationModel(decimal interestRate,
             decimal principalBalance,
-            int daysToCalculate,
+            uint daysToCalculate,
             InterestType interestType)
         {
             InterestRate = interestRate;
@@ -31,7 +31,7 @@ namespace AmortizorModel
         private const decimal DAYS_IN_YEAR = 365.25m;
         private readonly decimal InterestRate;
         private readonly decimal PrincipalBalance;
-        private readonly int DaysToCalculate;
+        private readonly uint DaysToCalculate;
         private readonly InterestType InterestType;
     }
 

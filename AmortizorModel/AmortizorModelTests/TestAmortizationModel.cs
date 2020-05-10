@@ -12,7 +12,7 @@ namespace AmortizorModelTests
         {
             var yearlyInterestRate = 0.045m;
             var initialLoanAmount = 20000m;
-            var daysToCalculate = 30;
+            uint daysToCalculate = 30;
             var rateType = InterestType.Simple;
 
             var model = new AmortizationModel(yearlyInterestRate, initialLoanAmount, daysToCalculate, rateType);
