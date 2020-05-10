@@ -34,10 +34,4 @@ namespace AmortizorModel
         private readonly uint DaysToCalculate;
         private readonly InterestType InterestType;
     }
-
-    public enum InterestType
-    {
-        Simple = 0,
-        Compound = 1
-    }
 }
