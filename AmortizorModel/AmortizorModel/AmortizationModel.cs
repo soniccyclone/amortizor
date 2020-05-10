@@ -4,12 +4,6 @@ namespace AmortizorModel
 {
     public class AmortizationModel
     {
-        private const decimal DAYS_IN_YEAR = 365.25m;
-        private readonly decimal InterestRate;
-        private readonly decimal PrincipalBalance;
-        private readonly int DaysToCalculate;
-        private readonly InterestType InterestType;
-
         public AmortizationModel(decimal interestRate,
             decimal principalBalance,
             int daysToCalculate,
@@ -33,6 +27,12 @@ namespace AmortizorModel
                 };
             }
         }
+
+        private const decimal DAYS_IN_YEAR = 365.25m;
+        private readonly decimal InterestRate;
+        private readonly decimal PrincipalBalance;
+        private readonly int DaysToCalculate;
+        private readonly InterestType InterestType;
     }
 
     public enum InterestType
