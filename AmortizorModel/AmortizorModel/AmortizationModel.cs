@@ -2,7 +2,7 @@
 
 namespace AmortizorModel
 {
-    public class AmortizationModel
+    public readonly struct AmortizationModel
     {
         public AmortizationModel(decimal interestRate,
             decimal principalBalance,
