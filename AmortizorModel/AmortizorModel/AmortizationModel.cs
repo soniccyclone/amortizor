@@ -7,12 +7,14 @@ namespace AmortizorModel
         public AmortizationModel(decimal interestRate,
             decimal principalBalance,
             uint daysToCalculate,
-            InterestType interestType)
+            InterestType interestType,
+            decimal payment)
         {
             InterestRate = interestRate;
             PrincipalBalance = principalBalance;
             DaysToCalculate = daysToCalculate;
             InterestType = interestType;
+            Payment = payment;
         }
 
         public decimal AccruedInterest
@@ -21,17 +23,27 @@ namespace AmortizorModel
             {
                 return InterestType switch
                 {
-                    InterestType.Simple => PrincipalBalance * InterestRate / DAYS_IN_YEAR * DaysToCalculate,
+                    InterestType.Simple => DailyInterest * DaysToCalculate,
                     InterestType.Compound => throw new NotImplementedException(),
                     _ => throw new NotImplementedException(),
                 };
             }
         }
+        public decimal FinalBalance
+        {
+            get
+            {
+                return PrincipalBalance + AccruedInterest - Payment;
+            }
+        }
+
+        private decimal DailyInterest => PrincipalBalance * InterestRate / DAYS_IN_YEAR;
 
         private const decimal DAYS_IN_YEAR = 365.25m;
         private readonly decimal InterestRate;
         private readonly decimal PrincipalBalance;
         private readonly uint DaysToCalculate;
         private readonly InterestType InterestType;
+        private readonly decimal Payment;
     }
 }
