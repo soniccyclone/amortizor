@@ -64,7 +64,7 @@ namespace AmortizorModel
         //We only want to consider loans that haven't already been paid off
         //TODO: Make things smarter so leftover extra payments that would have gone towards these loans will go towards other loans
         //TODO: Make minimum repayments on loans rollover into other loans once the current loan is paid off
-        private List<Loan> ApplicableLoans => Loans.Where(l => l.PrincipalBalance > 0).ToList();
+        private List<Loan> ApplicableLoans => Loans.Where(l => l.State == LoanState.Active).ToList();
         private Loan ExtraPaymentLoan(int days)
         {
             if (DebtSnowball)
