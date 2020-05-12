@@ -12,7 +12,8 @@ namespace AmortizorModel
         public decimal MinimumMonthlyPayment { get; set; }
 
         public decimal DailyInterest => PrincipalBalance * InterestRate / DAYS_IN_YEAR;
-        
+        public LoanState State => PrincipalBalance <= 0 ? LoanState.Paid : LoanState.Active;
+
         public decimal GetAccruedInterest(int days) => DailyInterest * days;
 
         private const decimal DAYS_IN_YEAR = 365.25m;
