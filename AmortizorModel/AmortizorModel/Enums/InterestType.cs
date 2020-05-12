@@ -1,4 +1,4 @@
-﻿namespace AmortizorModel
+﻿namespace AmortizorModel.Enums
 {
     public enum InterestType
     {

@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using AmortizorModel;
+using AmortizorModel.Enums;
 
 namespace AmortizorModelTests
 {

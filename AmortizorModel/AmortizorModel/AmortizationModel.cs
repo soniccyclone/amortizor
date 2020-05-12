@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AmortizorModel.Enums;
+using System;
 
 namespace AmortizorModel
 {
