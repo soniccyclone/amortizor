@@ -1,6 +1,7 @@
 ﻿using AmortizorModel.Enums;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -10,10 +11,10 @@ namespace AmortizorModel
     {
         //private readonly float AnnualRaisePercent;
         private readonly bool DebtSnowball;
+        private readonly decimal InitialExtraLoanPayment;
         private IList<Loan> Loans;
         private DateTime CurrentDate;
         //private decimal Salary;
-        private decimal ExtraLoanRepayment;
 
         public Person(IList<Loan> loans,
             DateTime startDate,
@@ -25,7 +26,7 @@ namespace AmortizorModel
             CurrentDate = startDate;
             CurrentDate = startDate;
             //Salary = salary;
-            ExtraLoanRepayment = extraLoanRepayment;
+            InitialExtraLoanPayment = extraLoanRepayment;
             DebtSnowball = debtSnowball;
         }
 
@@ -37,23 +38,27 @@ namespace AmortizorModel
                 {
                     var nextDate = CurrentDate.AddMonths(1);
                     var days = (nextDate - CurrentDate).Days;
-                    //Grab this here so we don't apply extra payment to multiple loans in one month
+                    //Grab the information on the extra payment for the month and which loan to apply it to that
+                    //month here so that we don't let any of this logic change in the middle of the month
                     var extraPaymentLoanForMonth = ExtraPaymentLoan(days);
+                    var extraLoanPaymentForMonth = ExtraLoanPayment;
                     //We only want to consider loans that haven't already been paid off
-                    foreach (Loan loan in ApplicableLoans) {
+                    foreach (Loan loan in ApplicableLoans)
+                    {
                         var newAccruedInterest = loan.GetAccruedInterest(days);
                         newAccruedInterest -= loan.MinimumMonthlyPayment;
                         if (loan.Name == extraPaymentLoanForMonth.Name)
-                            //TODO: Make this loop log which extra loan payments go to which loan so I know which ones to apply extra repayment to while doing this irl
-                            newAccruedInterest -= ExtraLoanRepayment;
+                            newAccruedInterest -= extraLoanPaymentForMonth;
                         loan.AccruedInterest += newAccruedInterest;
 
                         //Only apply payment to principal balance if we have paid off all of our accrued interest
                         if (loan.AccruedInterest < 0)
                         {
                             loan.PrincipalBalance += loan.AccruedInterest;
+                            //TODO: Make things smarter so leftover extra payments that would have gone towards these loans will go towards other loans
                             loan.AccruedInterest = 0;
                         }
+                        Debug.WriteLine($"Date: {nextDate}, Loan: {loan.Name}, Principal: {loan.PrincipalBalance}");
                     }
                     CurrentDate = nextDate;
                 }
@@ -62,16 +67,17 @@ namespace AmortizorModel
         }
 
         private decimal TotalDebt => ApplicableLoans.Sum(l => l.PrincipalBalance);
-        //TODO: Make things smarter so leftover extra payments that would have gone towards these loans will go towards other loans
-        //TODO: Make minimum repayments on loans rollover into other loans once the current loan is paid off
         private List<Loan> ApplicableLoans => Loans.Where(l => l.State == LoanState.Active).ToList();
+        private List<Loan> PaidLoans => Loans.Where(l => l.State == LoanState.Paid).ToList();
+        private decimal ExtraLoanPayment => InitialExtraLoanPayment + PaidLoans.Sum(l => l.MinimumMonthlyPayment);
+
         private Loan ExtraPaymentLoan(int days)
         {
             if (DebtSnowball)
                 return ApplicableLoans.OrderByDescending(l => l.PrincipalBalance).ThenBy(l => l.Name).First();
             else
                 //For minimizing interest paid, we want to always put the extra payment towards wichever loan will accrue the most interest next
-                return ApplicableLoans.OrderBy(l => l.GetAccruedInterest(days)).ThenBy(l => l.Name).First();
+                return ApplicableLoans.OrderByDescending(l => l.GetAccruedInterest(days)).ThenBy(l => l.Name).First();
         }
     }
 }

@@ -77,7 +77,7 @@ namespace AmortizorModelTests
                 new Loan() {
                     AccruedInterest = 0,
                     PrincipalBalance = 100m,
-                    InterestRate = 0.25m,
+                    InterestRate = 0.05m,
                     MinimumMonthlyPayment = 25m,
                     Name = "a"
                 },
@@ -93,7 +93,33 @@ namespace AmortizorModelTests
 
             var model = new Person(loans, startDate, 25, false);
 
-            Assert.AreEqual(startDate.AddMonths(4), model.FreedomDate);
+            Assert.AreEqual(startDate.AddMonths(3), model.FreedomDate);
+        }
+
+        [TestMethod]
+        public void Test_FreedomDate_ExtraPaymentLoan_MinimumPaymentRollover()
+        {
+            var loans = new Loan[] {
+                new Loan() {
+                    AccruedInterest = 0,
+                    PrincipalBalance = 275m,
+                    InterestRate = 0.0m,
+                    MinimumMonthlyPayment = 25m,
+                    Name = "a"
+                },
+                new Loan() {
+                    AccruedInterest = 0,
+                    PrincipalBalance = 100m,
+                    InterestRate = 0.0m,
+                    MinimumMonthlyPayment = 25m,
+                    Name = "b"
+                }
+            };
+            var startDate = new DateTime(2020, 1, 1);
+
+            var model = new Person(loans, startDate, 25, true);
+
+            Assert.AreEqual(startDate.AddMonths(5), model.FreedomDate);
         }
     }
 }
