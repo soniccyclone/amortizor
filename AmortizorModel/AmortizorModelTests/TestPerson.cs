@@ -50,14 +50,14 @@ namespace AmortizorModelTests
             var loans = new Loan[] {
                 new Loan() {
                     AccruedInterest = 0,
-                    PrincipalBalance = 100m,
+                    PrincipalBalance = 200m,
                     InterestRate = 0.0m,
                     MinimumMonthlyPayment = 25m,
                     Name = "a"
                 },
                 new Loan() {
                     AccruedInterest = 0,
-                    PrincipalBalance = 100m,
+                    PrincipalBalance = 200m,
                     InterestRate = 0.0m,
                     MinimumMonthlyPayment = 25m,
                     Name = "b"
@@ -67,7 +67,7 @@ namespace AmortizorModelTests
 
             var model = new Person(loans, startDate, 25, true);
 
-            Assert.AreEqual(startDate.AddMonths(3), model.FreedomDate);
+            Assert.AreEqual(startDate.AddMonths(6), model.FreedomDate);
         }
 
         [TestMethod]
