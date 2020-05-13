@@ -3,6 +3,7 @@ using System;
 
 namespace AmortizorModel
 {
+    //TODO: Delete this once I am done fully fleshing out Person
     public readonly struct AmortizationModel
     {
         public AmortizationModel(decimal interestRate,

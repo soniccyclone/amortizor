@@ -5,6 +5,7 @@ using AmortizorModel.Enums;
 
 namespace AmortizorModelTests
 {
+    //TODO: Delete this once I am done fully fleshing out Person
     [TestClass]
     public class TestAmortizationModel
     {
