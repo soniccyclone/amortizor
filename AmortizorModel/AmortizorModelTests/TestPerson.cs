@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace AmortizorModelTests
 {
     [TestClass]
-    public class TestEntityOnTheMerryGoRoundOfDebt
+    public class TestPerson
     {
         [TestMethod]
         public void Test_FreedomDate_NoExtraPayment()
@@ -21,7 +21,7 @@ namespace AmortizorModelTests
                 } };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new EntityOnTheMerryGoRoundOfDebt(loans, startDate, 0, false);
+            var model = new Person(loans, startDate, 0, false);
 
             Assert.AreEqual(startDate.AddMonths(120), model.FreedomDate);
         }
@@ -39,7 +39,7 @@ namespace AmortizorModelTests
                 } };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new EntityOnTheMerryGoRoundOfDebt(loans, startDate, 25, false);
+            var model = new Person(loans, startDate, 25, false);
 
             Assert.AreEqual(startDate.AddMonths(107), model.FreedomDate);
         }
@@ -65,7 +65,7 @@ namespace AmortizorModelTests
             };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new EntityOnTheMerryGoRoundOfDebt(loans, startDate, 25, true);
+            var model = new Person(loans, startDate, 25, true);
 
             Assert.AreEqual(startDate.AddMonths(3), model.FreedomDate);
         }
@@ -91,7 +91,7 @@ namespace AmortizorModelTests
             };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new EntityOnTheMerryGoRoundOfDebt(loans, startDate, 25, false);
+            var model = new Person(loans, startDate, 25, false);
 
             Assert.AreEqual(startDate.AddMonths(4), model.FreedomDate);
         }
