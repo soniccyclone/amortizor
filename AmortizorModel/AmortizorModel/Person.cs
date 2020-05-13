@@ -55,6 +55,8 @@ namespace AmortizorModel
                             RolloverLoanPayment(loan.PrincipalBalance, daysInCurrentMonth);
                             loan.AccruedInterest = 0;
                         }
+                        //TODO: Make this debug line be some kind of logger to let you know how to pay off your loans at each month
+                        Debug.WriteLine($"Date: {nextDate}, Loan: {loan.Name}, Principal: {loan.PrincipalBalance}");
                     }
                     CurrentDate = nextDate;
                 }
