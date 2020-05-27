@@ -3,19 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace AmortizorModel
 {
     public class Person
     {
-        public Person(IList<Loan> loans, DateTime startDate, decimal extraLoanRepayment, bool debtSnowball)
+        public Person(IList<Loan> loans, DateTime startDate, decimal extraLoanRepayment)
         {
             Loans = loans;
             CurrentDate = startDate;
             CurrentDate = startDate;
             InitialExtraLoanPayment = extraLoanRepayment;
-            DebtSnowball = debtSnowball;
             //AnnualRaisePercent = annualRaisePercent;
             //AnnualRaiseDate = annualRaiseDate;
             //Salary = salary;
@@ -23,6 +21,7 @@ namespace AmortizorModel
 
         //TODO: Make this prettier
         //(Fracture into functions? Move into a DebtCalendar model? Maybe make the person a property of the DebtCalendar instead of vice versa? Most of a Person's attributes are very tied to this function so maybe just fracture this function into smaller bits instead. Or make a service?)
+        //Definitely make this function a service with private helpers to make things prettier
         public DateTime FreedomDate
         {
             get
@@ -35,7 +34,7 @@ namespace AmortizorModel
                     var daysInCurrentMonth = (nextDate - CurrentDate).Days;
                     //Grab the information on the extra payment for the month and which loan to apply it to that
                     //month here so that we don't let any of this logic change in the middle of the month
-                    var extraPaymentLoanForMonth = ExtraPaymentLoan(daysInCurrentMonth);
+                    var extraPaymentLoanForMonth = ExtraPaymentLoan;
                     var extraLoanPaymentForMonth = ExtraLoanPayment;
                     //We only want to consider loans that haven't already been paid off
                     foreach (Loan loan in ApplicableLoans)
@@ -50,7 +49,7 @@ namespace AmortizorModel
                         if (loan.AccruedInterest < 0)
                         {
                             loan.PrincipalBalance += loan.AccruedInterest;
-                            RolloverLoanPayment(loan.PrincipalBalance, daysInCurrentMonth);
+                            RolloverLoanPayment(loan.PrincipalBalance);
                             loan.AccruedInterest = 0;
                         }
                         //TODO: Make this debug line be some kind of logger to let you know how to pay off your loans at each month
@@ -62,11 +61,10 @@ namespace AmortizorModel
             }
         }
 
-        private readonly bool DebtSnowball;
         private readonly decimal InitialExtraLoanPayment;
         private IList<Loan> Loans;
         private DateTime CurrentDate;
-        //TODO: Salary model?
+        //TODO: Use Salary model
         //private readonly float AnnualRaisePercent;
         //private readonly DateTime AnnualRaiseDate;
         //private decimal Salary;
@@ -74,24 +72,16 @@ namespace AmortizorModel
         private decimal TotalDebt => ApplicableLoans.Sum(l => l.PrincipalBalance);
         private List<Loan> ApplicableLoans => Loans.Where(l => l.State == LoanState.Active).ToList();
         private List<Loan> PaidLoans => Loans.Where(l => l.State == LoanState.Paid).ToList();
+        private Loan ExtraPaymentLoan => ApplicableLoans.OrderBy(l => l.PrincipalBalance).ThenBy(l => l.Name).First();
         private decimal ExtraLoanPayment => InitialExtraLoanPayment + PaidLoans.Sum(l => l.MinimumMonthlyPayment);
 
-        private Loan ExtraPaymentLoan(int days)
-        {
-            if (DebtSnowball)
-                return ApplicableLoans.OrderBy(l => l.PrincipalBalance).ThenBy(l => l.Name).First();
-            else
-                //For minimizing interest paid, we want to always put the extra payment towards wichever loan will accrue the most interest next
-                return ApplicableLoans.OrderByDescending(l => l.GetAccruedInterest(days)).ThenBy(l => l.Name).First();
-        }
-
-        private void RolloverLoanPayment(decimal loanNegativePrincipal, int days)
+        private void RolloverLoanPayment(decimal loanNegativePrincipal)
         {
             var leftoverPayment = loanNegativePrincipal;
             while (ApplicableLoans.Any() && leftoverPayment < 0)
             {
                 //While we have surplus payments from paid off loans, apply them to whatever is the loan we want to pay extra towards in the moment
-                var loanToPayTowards = ExtraPaymentLoan(days);
+                var loanToPayTowards = ExtraPaymentLoan;
                 var newPrincipalBalance = loanToPayTowards.PrincipalBalance + leftoverPayment;
                 leftoverPayment = newPrincipalBalance;
                 loanToPayTowards.PrincipalBalance = newPrincipalBalance;
