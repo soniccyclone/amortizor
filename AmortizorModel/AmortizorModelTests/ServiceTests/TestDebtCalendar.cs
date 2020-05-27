@@ -107,7 +107,7 @@ namespace AmortizorModelTests
         }
 
         [TestMethod]
-        public void Test_FreedomDate_RolloverPayment()
+        public void Test_FreedomDate_ProcessSurplusLoanPayment()
         {
             var loans = new Loan[] {
                 new Loan() {

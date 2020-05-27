@@ -16,43 +16,54 @@ namespace AmortizorModel.Services
         public DateTime FreedomDate(DateTime startDate)
         {
             var currentDate = startDate;
-            //This loop represents the thought process a person would go through on a monthly basis to decide how to pay off their debts each month
-            //Long term goal would be to clean this up but abstracting the process this way lets me avoid lots of stuff I'd have to handle otherwise (e.g. leap years, rounding errors, incredibly complex differential equations)
             while (Person.TotalDebt > 0)
             {
-                var nextDate = currentDate.AddMonths(1);
-                var daysInCurrentMonth = (nextDate - currentDate).Days;
-                //Grab the information on the extra payment for the month and which loan to apply it to that
-                //month here so that we don't let any of this logic change in the middle of the month
-                var extraPaymentLoanForMonth = Person.ExtraPaymentLoan;
-                if (currentDate.Month == Person.Salary.AnnualRaiseMonth)
-                    ApplyRaise();
-                var extraLoanPaymentForMonth = Person.ExtraLoanPayment;
-                //We only want to consider loans that haven't already been paid off
-                foreach (ILoan loan in Person.ApplicableLoans)
-                {
-                    var newAccruedInterest = loan.GetAccruedInterest(daysInCurrentMonth);
-                    newAccruedInterest -= loan.MinimumMonthlyPayment;
-                    if (loan.Name == extraPaymentLoanForMonth.Name)
-                        newAccruedInterest -= extraLoanPaymentForMonth;
-                    loan.AccruedInterest += newAccruedInterest;
-
-                    //Only apply payment to principal balance if we have paid off all of our accrued interest
-                    if (loan.AccruedInterest < 0)
-                    {
-                        loan.PrincipalBalance += loan.AccruedInterest;
-                        RolloverLoanPayment(loan.PrincipalBalance);
-                        loan.AccruedInterest = 0;
-                    }
-                    //TODO: Make this debug line be some kind of logger to let you know how to pay off your loans at each month
-                    Debug.WriteLine($"Date: {nextDate}, Loan: {loan.Name}, Principal: {loan.PrincipalBalance}");
-                }
-                currentDate = nextDate;
+                currentDate = ProcessMonth(currentDate);
             }
             return currentDate;
         }
 
-        private void RolloverLoanPayment(decimal loanNegativePrincipal)
+        //This function represents the thought process a person would go through within a month to decide how to pay off their debts most efficiently
+        //Long term goal would be to clean this up by using more math, but abstracting the process this way lets me avoid lots of stuff I'd have to
+        //handle otherwise (e.g. leap years, rounding errors, incredibly complex differential equations)
+        private DateTime ProcessMonth(DateTime currentDate)
+        {
+            var nextDate = currentDate.AddMonths(1);
+            var daysInCurrentMonth = (nextDate - currentDate).Days;
+            //Grab the information on the extra payment for the month and which loan to apply it to for
+            //that month here so that we don't let any of this logic change in the middle of the month
+            var extraPaymentLoanForMonth = Person.ExtraPaymentLoan;
+            if (currentDate.Month == Person.Salary.AnnualRaiseMonth)
+                ApplyRaise();
+            var extraLoanPaymentForMonth = Person.ExtraLoanPayment;
+            //We only want to consider loans that haven't already been paid off
+            foreach (ILoan loan in Person.ApplicableLoans)
+            {
+                ProcessLoan(loan, extraPaymentLoanForMonth, daysInCurrentMonth, extraLoanPaymentForMonth);
+                //TODO: Change this debug line into some kind of LoanInstruction function that logs what the user should do to this loan in this month
+                Debug.WriteLine($"Date: {nextDate}, Loan: {loan.Name}, Principal: {loan.PrincipalBalance}");
+            }
+            return nextDate;
+        }
+
+        private void ProcessLoan(ILoan loan, ILoan extraPaymentLoanForMonth, int daysInCurrentMonth, decimal extraLoanPaymentForMonth)
+        {
+            var newAccruedInterest = loan.GetAccruedInterest(daysInCurrentMonth);
+            newAccruedInterest -= loan.MinimumMonthlyPayment;
+            if (loan.Name == extraPaymentLoanForMonth.Name)
+                newAccruedInterest -= extraLoanPaymentForMonth;
+            loan.AccruedInterest += newAccruedInterest;
+
+            //Only apply payment to principal balance if we have paid off all of our accrued interest
+            if (loan.AccruedInterest < 0)
+            {
+                loan.PrincipalBalance += loan.AccruedInterest;
+                ProcessSurplusLoanPayment(loan.PrincipalBalance);
+                loan.AccruedInterest = 0;
+            }
+        }
+
+        private void ProcessSurplusLoanPayment(decimal loanNegativePrincipal)
         {
             var leftoverPayment = loanNegativePrincipal;
             while (Person.ApplicableLoans.Any() && leftoverPayment < 0)
