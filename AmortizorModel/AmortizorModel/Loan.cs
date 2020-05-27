@@ -1,9 +1,9 @@
 ﻿using AmortizorModel.Enums;
-using System;
+using AmortizorModel.Interfaces;
 
 namespace AmortizorModel
 {
-    public class Loan
+    public class Loan : ILoan
     {
         public string Name { get; set; }
         public decimal InterestRate { get; set; }

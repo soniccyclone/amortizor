@@ -1,11 +1,12 @@
 using AmortizorModel;
+using AmortizorModel.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace AmortizorModelTests
 {
     [TestClass]
-    public class TestPerson
+    public class TestDebtCalendar
     {
         [TestMethod]
         public void Test_FreedomDate_NoExtraPayment()
@@ -17,12 +18,14 @@ namespace AmortizorModelTests
                     InterestRate = 0.068m,
                     MinimumMonthlyPayment = 287.7m,
                     Name = "a"
-                } };
+                }
+            };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new Person(loans, startDate, 0);
+            var model = new Person(loans, 0);
+            var service = new DebtCalendar(model);
 
-            Assert.AreEqual(startDate.AddMonths(120), model.FreedomDate);
+            Assert.AreEqual(startDate.AddMonths(120), service.FreedomDate(startDate));
         }
 
         [TestMethod]
@@ -35,12 +38,14 @@ namespace AmortizorModelTests
                     InterestRate = 0.068m,
                     MinimumMonthlyPayment = 287.7m,
                     Name = "a"
-                } };
+                }
+            };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new Person(loans, startDate, 25);
+            var model = new Person(loans, 25);
+            var service = new DebtCalendar(model);
 
-            Assert.AreEqual(startDate.AddMonths(107), model.FreedomDate);
+            Assert.AreEqual(startDate.AddMonths(107), service.FreedomDate(startDate));
         }
 
         [TestMethod]
@@ -64,9 +69,10 @@ namespace AmortizorModelTests
             };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new Person(loans, startDate, 25);
+            var model = new Person(loans, 25);
+            var service = new DebtCalendar(model);
 
-            Assert.AreEqual(startDate.AddMonths(6), model.FreedomDate);
+            Assert.AreEqual(startDate.AddMonths(6), service.FreedomDate(startDate));
         }
 
         [TestMethod]
@@ -90,9 +96,10 @@ namespace AmortizorModelTests
             };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new Person(loans, startDate, 25);
+            var model = new Person(loans, 25);
+            var service = new DebtCalendar(model);
 
-            Assert.AreEqual(startDate.AddMonths(5), model.FreedomDate);
+            Assert.AreEqual(startDate.AddMonths(5), service.FreedomDate(startDate));
         }
 
         [TestMethod]
@@ -116,9 +123,10 @@ namespace AmortizorModelTests
             };
             var startDate = new DateTime(2020, 1, 1);
 
-            var model = new Person(loans, startDate, 25);
+            var model = new Person(loans, 25);
+            var service = new DebtCalendar(model);
 
-            Assert.AreEqual(startDate.AddMonths(1), model.FreedomDate);
+            Assert.AreEqual(startDate.AddMonths(1), service.FreedomDate(startDate));
         }
     }
 }
