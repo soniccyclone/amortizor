@@ -1,4 +1,5 @@
 ﻿using AmortizorModel.Interfaces;
+using AmortizorModel.Models;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace AmortizorModel.Services
     {
         public DebtCalendar(Person person)
         {
-            this.person = person;
+            Person = person;
         }
 
         public DateTime FreedomDate(DateTime startDate)
@@ -17,16 +18,18 @@ namespace AmortizorModel.Services
             var currentDate = startDate;
             //This loop represents the thought process a person would go through on a monthly basis to decide how to pay off their debts each month
             //Long term goal would be to clean this up but abstracting the process this way lets me avoid lots of stuff I'd have to handle otherwise (e.g. leap years, rounding errors, incredibly complex differential equations)
-            while (person.TotalDebt > 0)
+            while (Person.TotalDebt > 0)
             {
                 var nextDate = currentDate.AddMonths(1);
                 var daysInCurrentMonth = (nextDate - currentDate).Days;
                 //Grab the information on the extra payment for the month and which loan to apply it to that
                 //month here so that we don't let any of this logic change in the middle of the month
-                var extraPaymentLoanForMonth = person.ExtraPaymentLoan;
-                var extraLoanPaymentForMonth = person.ExtraLoanPayment;
+                var extraPaymentLoanForMonth = Person.ExtraPaymentLoan;
+                if (currentDate.Month == Person.Salary.AnnualRaiseMonth)
+                    ApplyRaise();
+                var extraLoanPaymentForMonth = Person.ExtraLoanPayment;
                 //We only want to consider loans that haven't already been paid off
-                foreach (ILoan loan in person.ApplicableLoans)
+                foreach (ILoan loan in Person.ApplicableLoans)
                 {
                     var newAccruedInterest = loan.GetAccruedInterest(daysInCurrentMonth);
                     newAccruedInterest -= loan.MinimumMonthlyPayment;
@@ -52,16 +55,23 @@ namespace AmortizorModel.Services
         private void RolloverLoanPayment(decimal loanNegativePrincipal)
         {
             var leftoverPayment = loanNegativePrincipal;
-            while (person.ApplicableLoans.Any() && leftoverPayment < 0)
+            while (Person.ApplicableLoans.Any() && leftoverPayment < 0)
             {
                 //While we have surplus payments from paid off loans, apply them to whatever is the loan we want to pay extra towards in the moment
-                var loanToPayTowards = person.ExtraPaymentLoan;
+                var loanToPayTowards = Person.ExtraPaymentLoan;
                 var newPrincipalBalance = loanToPayTowards.PrincipalBalance + leftoverPayment;
                 leftoverPayment = newPrincipalBalance;
                 loanToPayTowards.PrincipalBalance = newPrincipalBalance;
             }
         }
 
-        private Person person { get; }
+        private void ApplyRaise()
+        {
+            var raise = Person.Salary.AnnualAmount * Person.Salary.AnnualRaisePercent;
+            Person.Salary.AnnualAmount += raise;
+            Person.ExtraLoanPaymentFromRaises += raise * Person.Salary.PercentOfRaiseForRepayment;
+        }
+
+        private Person Person { get; }
     }
 }

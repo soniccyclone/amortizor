@@ -21,8 +21,9 @@ namespace AmortizorModelTests
                 }
             };
             var startDate = new DateTime(2020, 1, 1);
+            var salary = new Salary();
 
-            var model = new Person(loans, 0);
+            var model = new Person(loans, 0, salary);
             var service = new DebtCalendar(model);
 
             Assert.AreEqual(startDate.AddMonths(120), service.FreedomDate(startDate));
@@ -41,8 +42,9 @@ namespace AmortizorModelTests
                 }
             };
             var startDate = new DateTime(2020, 1, 1);
+            var salary = new Salary();
 
-            var model = new Person(loans, 25);
+            var model = new Person(loans, 25, salary);
             var service = new DebtCalendar(model);
 
             Assert.AreEqual(startDate.AddMonths(107), service.FreedomDate(startDate));
@@ -68,8 +70,9 @@ namespace AmortizorModelTests
                 }
             };
             var startDate = new DateTime(2020, 1, 1);
+            var salary = new Salary();
 
-            var model = new Person(loans, 25);
+            var model = new Person(loans, 25, salary);
             var service = new DebtCalendar(model);
 
             Assert.AreEqual(startDate.AddMonths(6), service.FreedomDate(startDate));
@@ -95,8 +98,9 @@ namespace AmortizorModelTests
                 }
             };
             var startDate = new DateTime(2020, 1, 1);
+            var salary = new Salary();
 
-            var model = new Person(loans, 25);
+            var model = new Person(loans, 25, salary);
             var service = new DebtCalendar(model);
 
             Assert.AreEqual(startDate.AddMonths(5), service.FreedomDate(startDate));
@@ -122,11 +126,41 @@ namespace AmortizorModelTests
                 }
             };
             var startDate = new DateTime(2020, 1, 1);
+            var salary = new Salary();
 
-            var model = new Person(loans, 25);
+            var model = new Person(loans, 25, salary);
             var service = new DebtCalendar(model);
 
             Assert.AreEqual(startDate.AddMonths(1), service.FreedomDate(startDate));
+        }
+
+        [TestMethod]
+        public void Test_FreedomDate_ApplyRaise()
+        {
+            var loans = new Loan[] {
+                new Loan() {
+                    AccruedInterest = 0,
+                    PrincipalBalance = 300,
+                    InterestRate = 0.0m,
+                    MinimumMonthlyPayment = 25m,
+                    Name = "a"
+                }
+            };
+
+            var startDate = new DateTime(2020, 1, 1);
+
+            var salary = new Salary()
+            {
+                AnnualAmount = 100m,
+                AnnualRaiseMonth = 4,
+                AnnualRaisePercent = 0.25m,
+                PercentOfRaiseForRepayment = 1m
+            };
+
+            var model = new Person(loans, 25, salary);
+            var service = new DebtCalendar(model);
+
+            Assert.AreEqual(startDate.AddMonths(5), service.FreedomDate(startDate));
         }
     }
 }

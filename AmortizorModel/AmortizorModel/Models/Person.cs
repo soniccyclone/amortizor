@@ -5,25 +5,25 @@ using System.Linq;
 
 namespace AmortizorModel.Models
 {
-    //TODO: Decouple with interface. That should protect me from the service tests becoming a nightmare later
     public class Person
     {
-        public Person(IList<ILoan> loans, decimal extraLoanRepayment)
+        public Person(IList<ILoan> loans, decimal extraLoanRepayment, Salary salary)
         {
             Loans = loans;
             InitialExtraLoanPayment = extraLoanRepayment;
-            //TODO: Use Salary model
-            //Salary = salary;
+            ExtraLoanPaymentFromRaises = 0;
+            Salary = salary;
         }
 
         public decimal InitialExtraLoanPayment { get; }
+        public decimal ExtraLoanPaymentFromRaises { get; set; }
         public IList<ILoan> Loans { get; }
-        //private Salary salary { get; }
+        public Salary Salary { get; }
 
         public decimal TotalDebt => ApplicableLoans.Sum(l => l.PrincipalBalance);
         public IList<ILoan> ApplicableLoans => Loans.Where(l => l.State == LoanState.Active).ToList();
         public IList<ILoan> PaidLoans => Loans.Where(l => l.State == LoanState.Paid).ToList();
         public ILoan ExtraPaymentLoan => ApplicableLoans.OrderBy(l => l.PrincipalBalance).ThenBy(l => l.Name).First();
-        public decimal ExtraLoanPayment => InitialExtraLoanPayment + PaidLoans.Sum(l => l.MinimumMonthlyPayment);
+        public decimal ExtraLoanPayment => InitialExtraLoanPayment + PaidLoans.Sum(l => l.MinimumMonthlyPayment) + ExtraLoanPaymentFromRaises;
     }
 }
