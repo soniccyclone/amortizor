@@ -1,7 +1,7 @@
 ﻿using AmortizorModel.Enums;
 using AmortizorModel.Interfaces;
 
-namespace AmortizorModel
+namespace AmortizorModel.Models
 {
     public class Loan : ILoan
     {

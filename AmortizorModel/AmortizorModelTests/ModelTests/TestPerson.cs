@@ -1,6 +1,6 @@
-using AmortizorModel;
 using AmortizorModel.Enums;
 using AmortizorModel.Interfaces;
+using AmortizorModel.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

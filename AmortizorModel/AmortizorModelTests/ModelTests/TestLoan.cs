@@ -1,5 +1,5 @@
-﻿using AmortizorModel;
-using AmortizorModel.Enums;
+﻿using AmortizorModel.Enums;
+using AmortizorModel.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AmortizorModelTests

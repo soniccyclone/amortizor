@@ -3,7 +3,7 @@ using AmortizorModel.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AmortizorModel
+namespace AmortizorModel.Models
 {
     //TODO: Decouple with interface. That should protect me from the service tests becoming a nightmare later
     public class Person
