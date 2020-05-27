@@ -1,4 +1,4 @@
-using AmortizorModel;
+using AmortizorModel.Models;
 using AmortizorModel.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
