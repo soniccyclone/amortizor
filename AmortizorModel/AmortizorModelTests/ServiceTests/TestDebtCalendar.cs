@@ -160,7 +160,7 @@ namespace AmortizorModelTests
             var model = new Person(loans, 25, salary);
             var service = new DebtCalendar(model);
 
-            Assert.AreEqual(startDate.AddMonths(5), service.FreedomDate(startDate));
+            Assert.AreEqual(startDate.AddMonths(6), service.FreedomDate(startDate));
         }
     }
 }

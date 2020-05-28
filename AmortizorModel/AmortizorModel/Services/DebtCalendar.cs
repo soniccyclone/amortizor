@@ -80,7 +80,8 @@ namespace AmortizorModel.Services
         {
             var raise = Person.Salary.AnnualAmount * Person.Salary.AnnualRaisePercent;
             Person.Salary.AnnualAmount += raise;
-            Person.ExtraLoanPaymentFromRaises += raise * Person.Salary.PercentOfRaiseForRepayment;
+            var monthlyRaise = raise / 12 * Person.Salary.PercentOfRaiseForRepayment;
+            Person.ExtraLoanPaymentFromRaises += monthlyRaise;
         }
 
         private Person Person { get; }
