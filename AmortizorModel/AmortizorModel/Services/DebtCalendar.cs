@@ -1,8 +1,8 @@
 ﻿using AmortizorModel.Interfaces;
 using AmortizorModel.Models;
-using System;
 using System.Diagnostics;
 using System.Linq;
+using System;
 
 namespace AmortizorModel.Services
 {
@@ -13,6 +13,9 @@ namespace AmortizorModel.Services
             Person = person;
         }
 
+        private Person Person { get; }
+
+        #region Public Member Methods
         public DateTime FreedomDate(DateTime startDate)
         {
             var currentDate = startDate;
@@ -22,28 +25,15 @@ namespace AmortizorModel.Services
             }
             return currentDate;
         }
+        #endregion
 
-        //This function represents the thought process a person would go through within a month to decide how to pay off their debts most efficiently
-        //Long term goal would be to clean this up by using more math, but abstracting the process this way lets me avoid lots of stuff I'd have to
-        //handle otherwise (e.g. leap years, rounding errors, incredibly complex differential equations)
-        private DateTime ProcessMonth(DateTime currentDate)
+        #region Private Member Methods
+        private void ApplyRaise()
         {
-            var nextDate = currentDate.AddMonths(1);
-            var daysInCurrentMonth = (nextDate - currentDate).Days;
-            //Grab the information on the extra payment for the month and which loan to apply it to for
-            //that month here so that we don't let any of this logic change in the middle of the month
-            var extraPaymentLoanForMonth = Person.ExtraPaymentLoan;
-            if (currentDate.Month == Person.Salary.AnnualRaiseMonth)
-                ApplyRaise();
-            var extraLoanPaymentForMonth = Person.ExtraLoanPayment;
-            //We only want to consider loans that haven't already been paid off
-            foreach (ILoan loan in Person.ApplicableLoans)
-            {
-                ProcessLoan(loan, extraPaymentLoanForMonth, daysInCurrentMonth, extraLoanPaymentForMonth);
-                //TODO: Change this debug line into some kind of LoanInstruction function that logs what the user should do to this loan in this month
-                Debug.WriteLine($"Date: {nextDate}, Loan: {loan.Name}, Principal: {loan.PrincipalBalance}");
-            }
-            return nextDate;
+            var raise = Person.Salary.AnnualAmount * Person.Salary.AnnualRaisePercent;
+            Person.Salary.AnnualAmount += raise;
+            var monthlyRaise = raise / 12 * Person.Salary.PercentOfRaiseForRepayment;
+            Person.ExtraLoanPaymentFromRaises += monthlyRaise;
         }
 
         private void ProcessLoan(ILoan loan, ILoan extraPaymentLoanForMonth, int daysInCurrentMonth, decimal extraLoanPaymentForMonth)
@@ -51,7 +41,9 @@ namespace AmortizorModel.Services
             var newAccruedInterest = loan.GetAccruedInterest(daysInCurrentMonth);
             newAccruedInterest -= loan.MinimumMonthlyPayment;
             if (loan.Name == extraPaymentLoanForMonth.Name)
+            {
                 newAccruedInterest -= extraLoanPaymentForMonth;
+            }
             loan.AccruedInterest += newAccruedInterest;
 
             //Only apply payment to principal balance if we have paid off all of our accrued interest
@@ -61,6 +53,31 @@ namespace AmortizorModel.Services
                 ProcessSurplusLoanPayment(loan.PrincipalBalance);
                 loan.AccruedInterest = 0;
             }
+        }
+
+        //This function represents the thought process a person would go through within a month to decide how to pay off their debts most efficiently.
+        //Long term goal would be to clean this up by using more math, but abstracting the process this way lets me avoid lots of stuff I'd have to
+        //handle otherwise (e.g. leap years, rounding errors, incredibly complex differential equations).
+        private DateTime ProcessMonth(DateTime currentDate)
+        {
+            var nextDate = currentDate.AddMonths(1);
+            var daysInCurrentMonth = (nextDate - currentDate).Days;
+            //Grab the information on the extra payment for the month and which loan to apply it to for
+            //that month here so that we don't let any of this logic change in the middle of the month.
+            var extraPaymentLoanForMonth = Person.ExtraPaymentLoan;
+            if (currentDate.Month == Person.Salary.AnnualRaiseMonth)
+            {
+                ApplyRaise();
+            }
+            var extraLoanPaymentForMonth = Person.ExtraLoanPayment;
+            //We only want to consider loans that haven't already been paid off.
+            foreach (ILoan loan in Person.ApplicableLoans)
+            {
+                ProcessLoan(loan, extraPaymentLoanForMonth, daysInCurrentMonth, extraLoanPaymentForMonth);
+                //TODO: Change this debug line into some kind of LoanInstruction function that logs what the user should do to this loan in this month
+                Debug.WriteLine($"Date: {nextDate}, Loan: {loan.Name}, Principal: {loan.PrincipalBalance}");
+            }
+            return nextDate;
         }
 
         private void ProcessSurplusLoanPayment(decimal loanNegativePrincipal)
@@ -75,15 +92,6 @@ namespace AmortizorModel.Services
                 loanToPayTowards.PrincipalBalance = newPrincipalBalance;
             }
         }
-
-        private void ApplyRaise()
-        {
-            var raise = Person.Salary.AnnualAmount * Person.Salary.AnnualRaisePercent;
-            Person.Salary.AnnualAmount += raise;
-            var monthlyRaise = raise / 12 * Person.Salary.PercentOfRaiseForRepayment;
-            Person.ExtraLoanPaymentFromRaises += monthlyRaise;
-        }
-
-        private Person Person { get; }
+        #endregion
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AmortizorModel.Models
+﻿namespace AmortizorModel.Models
 {
     public class Salary
     {

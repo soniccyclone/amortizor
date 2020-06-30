@@ -14,7 +14,7 @@ namespace AmortizorModelTests
             var loans = new Loan[] {
                 new Loan() {
                     AccruedInterest = 0,
-                    PrincipalBalance = 25000,
+                    PrincipalBalance = 25_000,
                     InterestRate = 0.068m,
                     MinimumMonthlyPayment = 287.7m,
                     Name = "a"
@@ -35,7 +35,7 @@ namespace AmortizorModelTests
             var loans = new Loan[] {
                 new Loan() {
                     AccruedInterest = 0,
-                    PrincipalBalance = 25000,
+                    PrincipalBalance = 25_000,
                     InterestRate = 0.068m,
                     MinimumMonthlyPayment = 287.7m,
                     Name = "a"
