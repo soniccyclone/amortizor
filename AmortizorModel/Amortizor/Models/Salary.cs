@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Amortizor.Interfaces;
 
 namespace Amortizor.Models
 {
-    public class Salary
+    public class Salary : ISalary
     {
         public decimal AnnualAmount { get; set; }
         public int AnnualRaiseMonth { get; set; }

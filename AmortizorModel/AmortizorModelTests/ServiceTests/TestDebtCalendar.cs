@@ -1,3 +1,4 @@
+using Amortizor.Interfaces;
 using Amortizor.Models;
 using Amortizor.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -216,7 +217,7 @@ namespace AmortizorTests
             AssertDecision(result[2].Decisions[0], "b", 50, 75);
         }
 
-        private void AssertDecision(DebtDecisionModel decision, string loanName, decimal principal, decimal payment)
+        private void AssertDecision(IDebtDecisionModel decision, string loanName, decimal principal, decimal payment)
         {
             Assert.AreEqual(loanName, decision.LoanName);
             Assert.AreEqual(principal, decision.CurrentPrincipal);

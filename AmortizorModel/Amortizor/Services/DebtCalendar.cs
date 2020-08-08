@@ -1,14 +1,12 @@
 ﻿using Amortizor.Interfaces;
 using Amortizor.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Amortizor.Services
 {
-    public class DebtCalendar
+    public class DebtCalendar : IDebtCalendar
     {
         public DebtCalendar(Person person)
         {
@@ -34,9 +32,9 @@ namespace Amortizor.Services
         //This function represents the thought process a person would go through within a month to decide how to pay off their debts most efficiently
         //Long term goal would be to clean this up by using more math, but abstracting the process this way lets me avoid lots of stuff I'd have to
         //handle otherwise (e.g. leap years, rounding errors, incredibly complex differential equations)
-        private IList<DebtDecisionModel> ProcessMonth(DateTime currentDate, DateTime nextDate)
+        private IList<IDebtDecisionModel> ProcessMonth(DateTime currentDate, DateTime nextDate)
         {
-            var decisions = new List<DebtDecisionModel>();
+            var decisions = new List<IDebtDecisionModel>();
             var daysInCurrentMonth = (nextDate - currentDate).Days;
             //Grab the information on the extra payment for the month and which loan to apply it to for
             //that month here so that we don't let any of this logic change in the middle of the month
