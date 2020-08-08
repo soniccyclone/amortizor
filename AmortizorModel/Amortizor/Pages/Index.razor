@@ -5,3 +5,44 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+
+<table>
+    <thead>
+        <tr>
+            <td>Name</td>
+            <td>Interest Rate</td>
+            <td>Principal Balance</td>
+            <td>Minimum Monthly Payment</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in loans)
+        {
+        <tr>
+            <td><input type="text" @bind="loan.Name" /></td>
+            <td><input type="text" @bind="loan.InterestRate" /></td>
+            <td><input type="text" @bind="loan.PrincipalBalance" /></td>
+            <td><input type="text" @bind="loan.MinimumMonthlyPayment" /></td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<button @onclick="AddLoan">Add Loan</button>
+
+
+@code {
+    private IList<ILoan> loans = new List<ILoan>();
+    private IList<IMonthlyDecisionsModel> debtRepaymentPlan = new List<IMonthlyDecisionsModel>();
+
+    private void AddLoan()
+    {
+        loans.Add(new Loan());
+    }
+
+    private void GenerateRepaymentPlan()
+    {
+
+    }
+}
