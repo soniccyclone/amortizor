@@ -6,6 +6,6 @@ namespace Amortizor.Interfaces
 {
     public interface IDebtCalendar
     {
-        IList<MonthlyDecisionsModel> GenerateDebtRepaymentPlan(DateTime startDate);
+        IList<IMonthlyDecisionsModel> GenerateDebtRepaymentPlan(DateTime startDate);
     }
 }

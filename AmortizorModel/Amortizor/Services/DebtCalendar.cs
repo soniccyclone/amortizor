@@ -8,12 +8,12 @@ namespace Amortizor.Services
 {
     public class DebtCalendar : IDebtCalendar
     {
-        public DebtCalendar(Person person)
+        public DebtCalendar(IPerson person)
         {
             Person = person;
         }
 
-        public IList<MonthlyDecisionsModel> GenerateDebtRepaymentPlan(DateTime startDate)
+        public IList<IMonthlyDecisionsModel> GenerateDebtRepaymentPlan(DateTime startDate)
         {
             var currentDate = startDate;
             var monthlyDecisions = new List<MonthlyDecisionsModel>();
@@ -92,6 +92,6 @@ namespace Amortizor.Services
             Person.ExtraLoanPaymentFromRaises += monthlyRaise;
         }
 
-        private Person Person { get; }
+        private IPerson Person { get; }
     }
 }
