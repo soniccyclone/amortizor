@@ -16,7 +16,7 @@ namespace Amortizor.Services
         public IList<IMonthlyDecisionsModel> GenerateDebtRepaymentPlan(DateTime startDate)
         {
             var currentDate = startDate;
-            var monthlyDecisions = new List<MonthlyDecisionsModel>();
+            var monthlyDecisions = new List<IMonthlyDecisionsModel>();
             while (Person.TotalDebt > 0)
             {
                 var nextDate = currentDate.AddMonths(1);
