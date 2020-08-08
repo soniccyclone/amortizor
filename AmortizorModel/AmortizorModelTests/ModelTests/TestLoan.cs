@@ -1,8 +1,8 @@
-﻿using AmortizorModel.Enums;
-using AmortizorModel.Models;
+﻿using Amortizor.Enums;
+using Amortizor.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AmortizorModelTests
+namespace AmortizorTests
 {
     [TestClass]
     public class TestLoan

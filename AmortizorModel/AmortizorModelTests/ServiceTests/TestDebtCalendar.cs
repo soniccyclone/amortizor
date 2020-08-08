@@ -1,10 +1,10 @@
-using AmortizorModel.Models;
-using AmortizorModel.Services;
+using Amortizor.Models;
+using Amortizor.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 
-namespace AmortizorModelTests
+namespace AmortizorTests
 {
     [TestClass]
     public class TestDebtCalendar

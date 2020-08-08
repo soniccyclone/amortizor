@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AmortizorModel\AmortizorModel.csproj" />
+    <ProjectReference Include="..\Amortizor\Amortizor.csproj" />
   </ItemGroup>
 
 </Project>

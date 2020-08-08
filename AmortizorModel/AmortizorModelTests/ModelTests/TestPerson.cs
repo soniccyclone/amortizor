@@ -1,11 +1,11 @@
-using AmortizorModel.Enums;
-using AmortizorModel.Interfaces;
-using AmortizorModel.Models;
+using Amortizor.Enums;
+using Amortizor.Interfaces;
+using Amortizor.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.Generic;
 
-namespace AmortizorModelTests
+namespace AmortizorTests
 {
     [TestClass]
     public class TestPerson
