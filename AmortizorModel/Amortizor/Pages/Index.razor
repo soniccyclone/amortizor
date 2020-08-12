@@ -6,6 +6,32 @@ Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
+<div>
+    <label>Extra Loan Repayment</label>
+    <input type="text" @bind="extraLoanRepayment" />
+</div>
+<div>Salary:</div>
+<div>
+    <label>Annual Amount</label>
+    <input type="text" @bind="salary.AnnualAmount" />
+</div>
+<div>
+    <label>Annual Raise Month</label>
+    <input name="raisemonth" id="raisemonth" type="range" min="1" max="12" step="1" @bind="salary.AnnualRaiseMonth" />
+    <span>@salary.AnnualRaiseMonth</span>
+</div>
+<div>
+    <label>Annual Raise Percent</label>
+    <input type="text" @bind="salary.AnnualRaisePercent" />
+</div>
+<div>
+    <label>Percent of Raise for Repayment</label>
+    <input name="raisepercent" id="raisepercent" type="range" min="0" max="1" step="0.01" @bind="salary.PercentOfRaiseForRepayment" />
+    <span>@salary.PercentOfRaiseForRepayment</span>
+</div>
+
+<label>Start Date</label>
+<input type="date" @bind="startDate" @bind:format="yyyy-MM-dd" />
 
 <table>
     <thead>
@@ -19,22 +45,37 @@ Welcome to your new app.
     <tbody>
         @foreach (var loan in loans)
         {
-        <tr>
-            <td><input type="text" @bind="loan.Name" /></td>
-            <td><input type="text" @bind="loan.InterestRate" /></td>
-            <td><input type="text" @bind="loan.PrincipalBalance" /></td>
-            <td><input type="text" @bind="loan.MinimumMonthlyPayment" /></td>
-        </tr>
+            <tr>
+                <td><input type="text" @bind="loan.Name" /></td>
+                <td><input type="text" @bind="loan.InterestRate" /></td>
+                <td><input type="text" @bind="loan.PrincipalBalance" /></td>
+                <td><input type="text" @bind="loan.MinimumMonthlyPayment" /></td>
+            </tr>
         }
     </tbody>
 </table>
 
 <button @onclick="AddLoan">Add Loan</button>
 
+<button @onclick="GenerateRepaymentPlan">Generate Debt Repayment Plan</button>
+
+@foreach (var monthlyDecision in debtRepaymentPlan)
+{
+    <div>Month: @monthlyDecision.Month</div>
+    @foreach (var debtDecision in monthlyDecision.Decisions)
+    {
+        <div>Loan Name: @debtDecision.LoanName</div>
+        <div>Principal at Beginning of Month: @debtDecision.CurrentPrincipal</div>
+        <div>Payment to Make: @debtDecision.CurrentPayment</div>
+    }
+}
 
 @code {
-    private IList<ILoan> loans = new List<ILoan>();
-    private IList<IMonthlyDecisionsModel> debtRepaymentPlan = new List<IMonthlyDecisionsModel>();
+    private IList<ILoan> loans { get; set; } = new List<ILoan>();
+    private decimal extraLoanRepayment { get; set; } = 0;
+    private ISalary salary { get; set; } = new Salary();
+    private DateTime startDate { get; set; } = DateTime.Today;
+    private IList<IMonthlyDecisionsModel> debtRepaymentPlan { get; set; } = new List<IMonthlyDecisionsModel>();
 
     private void AddLoan()
     {
@@ -43,6 +84,9 @@ Welcome to your new app.
 
     private void GenerateRepaymentPlan()
     {
-
+        var personLoans = new List<ILoan>(loans);
+        var person = new Person(personLoans, extraLoanRepayment, salary);
+        var service = new DebtCalendar(person);
+        debtRepaymentPlan = service.GenerateDebtRepaymentPlan(startDate);
     }
 }
