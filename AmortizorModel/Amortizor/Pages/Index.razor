@@ -61,12 +61,12 @@ Welcome to your new app.
 
 @foreach (var monthlyDecision in debtRepaymentPlan)
 {
-    <div>Month: @monthlyDecision.Month</div>
+    <div>Month: @monthlyDecision.Month.ToString("d")</div>
     @foreach (var debtDecision in monthlyDecision.Decisions)
     {
         <div>Loan Name: @debtDecision.LoanName</div>
-        <div>Principal at Beginning of Month: @debtDecision.CurrentPrincipal</div>
-        <div>Payment to Make: @debtDecision.CurrentPayment</div>
+        <div>Principal at Beginning of Month: @debtDecision.CurrentPrincipal.ToString("0.##")</div>
+        <div>Payment to Make: @debtDecision.CurrentPayment.ToString("0.##")</div>
     }
 }
 
